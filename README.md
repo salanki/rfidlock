@@ -21,10 +21,10 @@ The Arduino software is in the `arduino` directory. Download my fork of the [HTT
 ## Management Server
 The server is designed to run on [Heroku](https://www.heroku.com/) , uses PostgreSQL for storage and Google authenticator for user authentication.
 
-**Entry log and Tag list**
+**Entry Log And Tag lLst**
 ![](https://raw.github.com/salanki/rfidlock/master/main_screenshot.png)
 
-**Adding a tag**
+**Adding A Tag**
 ![](https://raw.github.com/salanki/rfidlock/master/add_tag_screenshot.png)
 
 ### Installation
