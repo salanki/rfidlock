@@ -1,0 +1,10 @@
+@(status: Boolean)
+
+@import helper._
+
+@main() {
+    
+    <h1>Open lock</h1>
+	@{if(status == true) Messages("open.status.success")
+	else Messages("open.status.failure")}
+}

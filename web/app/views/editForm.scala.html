@@ -1,0 +1,34 @@
+@(id: Long, tagForm: Form[Tag])
+
+@import helper._
+
+@implicitFieldConstructor = @{ FieldConstructor(twitterBootstrapInput.f) }
+
+@main() {
+    
+    <h1>Edit tag</h1>
+    
+    @if(id != 1) {
+    @form(routes.Application.update(id)) {
+        
+        <fieldset>
+        
+			@inputText(tagForm("name"), '_label -> "Tag name")
+            @checkbox(tagForm("enabled"), '_label -> "Enabled",  '_help -> "")
+            @inputText(tagForm("name"), '_label -> "Tag name")
+            @inputText(tagForm("tuid"), '_label -> "Unique ID")
+        </fieldset>
+        
+        <div class="actions">
+            <input type="submit" value="Save this tag" class="btn primary"> or 
+            <a href="@routes.Application.list()" class="btn">Cancel</a> 
+        </div>
+        
+    }
+    
+    @form(routes.Application.delete(id), 'class -> "topRight") {
+        <input type="submit" value="Delete this tag" class="btn danger">
+    }
+    }
+    
+}

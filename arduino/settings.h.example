@@ -1,0 +1,21 @@
+/* Communications */
+
+#define COM_SSID_NAME "wifiname"
+#define COM_PASSPHRASE "wifikey"
+#define COM_SECRET "mysecret"
+#define COM_OPENSECRET "myopensecret"
+
+#define COM_HOSTNAME "mylock.herokuapp.com"
+#define COM_PORT 80
+
+#define COM_LISTENPORT 9001
+// #define COM_WDT /* 8s watchdog on all HTTP requests */
+#define COM_MAX_FAILED_GETS 1 /* Max number of gets not returning any data before reset */
+
+/* General */
+#define LOCK_OPENS 10 /* How long is the door open after a successful scan, max 120S */
+#define MAX_TAGS 30 // Max number of tags supported (-1)
+#define CHECK_INTERVAL 300000 //How often in miliseconds do we want to check in with the server to make sure everything is ok
+#define DEBUG
+//#define LINKDEBUG
+

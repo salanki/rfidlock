@@ -1,0 +1,8 @@
+# Messages
+
+app.title=My - Entry System
+securesocial.appName=My - Entry System
+entries.list.title={0,choice,0#No entries|1#One entry|1<{0,number,integer} entries} found
+tags.list.title={0,choice,0#No tags|1#One tag|1<{0,number,integer} tags} found
+open.status.success=Lock opened.
+open.status.failure=Lock failed to open, the lock is set to reset at next check. Please try again then.

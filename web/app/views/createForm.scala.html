@@ -1,0 +1,46 @@
+@(tagForm: Form[Tag])
+
+@import helper._
+
+@implicitFieldConstructor = @{ FieldConstructor(twitterBootstrapInput.f) } 
+
+@main() {
+    
+    <h1>Add a tag</h1>
+    
+    @form(routes.Application.save(), 'id -> "createForm") {
+        
+        <fieldset>
+        
+            @inputText(tagForm("name"), '_label -> "Name")
+            @checkbox(tagForm("enabled"), '_label -> "Enabled",  '_help -> "")
+            @helper.input(tagForm("tuid"), '_label -> "Unique ID", '_showConstraints -> false) { (id, name, value, args) =>
+             <font id="tuid_text" size="3" color="orange">Please scan tag now</font>
+  			 <input type="hidden" name="@name" id="@id" @toHtmlArgs(args)>
+			} 
+
+        </fieldset>
+        
+        <div class="actions">
+            <input type="submit" value="Create this tag" class="btn primary" disabled="disabled"> or 
+            <a href="@routes.Application.list()" class="btn">Cancel</a> 
+        </div>
+        
+        
+        <script>
+        $(document).ready(function(){
+		$.get('@routes.Enter.scan',{},function(data) {
+		  if(data == "timeout") {
+		   $('#tuid_text').html("Scan timed out, please refresh browser to try again");
+		   $('#tuid_text').attr("color","red");
+		  } else { 
+		   $('#tuid_text').html(data);
+		   $('#tuid_text').attr("color","green");
+           $('#tuid').val(data);
+           $('form#createForm input[type="submit"]').removeAttr('disabled');
+         }
+      });
+	  });
+        </script>
+    }    
+}

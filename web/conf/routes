@@ -1,0 +1,56 @@
+# Routes
+# This file defines all application routes (Higher priority routes first)
+# ~~~~
+
+# Default path will just redirect to the entry/tag list
+GET     /                           controllers.Application.index
+
+# Entry/Tag list (look at the default values for pagination parameters)
+GET     /list                  controllers.Application.list(pe:Int ?= 0, se:Int ?= 2, pt:Int ?= 0, st:Int ?= 2, f ?= "")
+
+# List tags, for the lock
+GET		/tags/lockList	   controllers.Application.listTagsToLock()
+
+# Add tag
+GET     /tags/new              controllers.Application.create
+POST    /tags                  controllers.Application.save
+
+# Edit existing tag
+GET     /tags/:id              controllers.Application.edit(id:Long)
+POST    /tags/:id              controllers.Application.update(id:Long)
+
+# Delete a tag
+POST    /tags/:id/delete       controllers.Application.delete(id:Long)
+
+GET		/enter/scan			   controllers.Enter.scan
+GET		/enter/authorize/:tag  controllers.Enter.authorize(tag: String)
+GET		/enter/log/:tag		   controllers.Enter.log(tag: String)
+
+GET		/lock/verify/:revision controllers.Lock.verify(revision: Int)
+GET		/lock/refresh		   controllers.Lock.refreshAction()
+GET		/lock/open			   controllers.Lock.openAction()
+
+# Map static resources from the /public folder to the /assets URL path
+GET     /assets/*file          controllers.Assets.at(path="/public", file)
+
+# SecureSocial routes, we don't really need all of these
+# Login page
+GET     /login                      securesocial.controllers.LoginPage.login
+GET     /logout                     securesocial.controllers.LoginPage.logout
+
+# User Registration and password handling 
+GET     /signup                     securesocial.controllers.Registration.startSignUp
+POST    /signup                     securesocial.controllers.Registration.handleStartSignUp
+GET     /signup/:token              securesocial.controllers.Registration.signUp(token)
+POST    /signup/:token              securesocial.controllers.Registration.handleSignUp(token)
+GET     /reset                      securesocial.controllers.Registration.startResetPassword
+POST    /reset                      securesocial.controllers.Registration.handleStartResetPassword
+GET     /reset/:token               securesocial.controllers.Registration.resetPassword(token)
+POST    /reset/:token               securesocial.controllers.Registration.handleResetPassword(token)
+GET     /password                   securesocial.controllers.PasswordChange.page
+POST    /password                   securesocial.controllers.PasswordChange.handlePasswordChange
+
+# Providers entry points
+GET     /authenticate/:provider     securesocial.controllers.ProviderController.authenticate(provider)
+POST    /authenticate/:provider     securesocial.controllers.ProviderController.authenticateByPost(provider)
+GET     /not-authorized             securesocial.controllers.ProviderController.notAuthorized

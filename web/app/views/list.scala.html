@@ -1,0 +1,205 @@
+@(currentEntryPage: Page[(Entry, Tag)], currentEntryOrderBy: Int, currentTagPage: Page[Tag], currentTagOrderBy: Int, currentFilter: String, lastCheckin: Option[java.util.Date])(implicit flash: play.api.mvc.Flash, request: securesocial.core.SecuredRequest[play.api.mvc.AnyContent])
+@import models.Implicits._
+
+@****************************************
+* Helper generating navigation links    *
+****************************************@
+@link(newEntryPage: Int = currentEntryPage.page, newEntryOrderBy: Option[Int] = None, newTagPage: Int = currentTagPage.page, newTagOrderBy: Option[Int] = None) = @{
+    routes.Application.list(newEntryPage, newEntryOrderBy .map { orderBy =>
+        if(orderBy == scala.math.abs(currentEntryOrderBy)) -currentEntryOrderBy else orderBy
+    }.getOrElse(currentEntryOrderBy), newTagPage, newTagOrderBy.map { orderBy =>
+        if(orderBy == scala.math.abs(currentTagOrderBy)) -currentTagOrderBy else orderBy
+    }.getOrElse(currentTagOrderBy), currentFilter)
+    
+}
+
+@**********************************
+* Helper generating table headers *   Some(orderBy)
+***********************************@    
+@headerEntry(orderBy: Int = currentEntryOrderBy, title: String) = {
+  <th class="col@orderBy header @if(scala.math.abs(currentEntryOrderBy) == orderBy) @{if(currentEntryOrderBy < 0) "headerSortDown" else "headerSortUp"}">
+        <a href="@link(0, Some(orderBy))">@title</a>
+  </th>
+}
+
+@headerTag(orderBy: Int = currentTagOrderBy, title: String) = {
+  <th class="col@orderBy header @if(scala.math.abs(currentTagOrderBy) == orderBy) @{if(currentTagOrderBy < 0) "headerSortDown" else "headerSortUp"}">
+        <a href="@link(newTagPage = 0, newTagOrderBy = Some(orderBy))">@title</a>
+  </th>
+}
+    
+@main() {
+    <h1>@Messages("entries.list.title", currentEntryPage.total)</h1>
+
+    @flash.get("success").map { message =>
+        <div class="alert-message warning">
+            <strong>Done!</strong> @message
+        </div>
+    }
+        <div id="actions">
+        
+        <form>
+			<p>Lock last check in: <b>@{lastCheckin match {
+			  case Some(date) => date.format("yyyy-MM-dd HH:mm")
+			  case None => "Never"
+			}}</b></p>
+        </form>
+        
+        @if(request.user.canOpen) { <a class="btn" id="add" href="@routes.Lock.openAction()">Open lock</a> }
+        
+    </div>
+    
+    
+    @Option(currentEntryPage.items).filterNot(_.isEmpty).map { entries =>
+
+        <table class="computers zebra-striped">
+            <thead>
+                <tr>
+                    @headerEntry(2, "Date")
+                    @headerEntry(4, "Tag")                    
+                    @headerEntry(3, "Permitted")
+                </tr>
+            </thead>
+            <tbody>
+
+                @entries.map { 
+                    case (entry, tag) => {
+                        <tr>
+                            <td>
+                                @entry.date.format("yyyy-MM-dd HH:mm")
+                            </td>
+                            <td>
+                               <a href="@routes.Application.edit(tag.id.get)">@tag.name</a>
+                            </td>
+                            <td>
+                                @{entry.permitted match {
+                                	case true => "Yes"
+                                	case false => "No"
+                                }}
+                            </td>
+                        </tr>
+                    }
+                }
+
+            </tbody>
+        </table>
+
+        <div id="pagination" class="pagination">
+            <ul>
+                @currentEntryPage.prev.map { page =>
+                    <li class="prev">
+                        <a href="@link(page)">&larr; Previous</a>
+                    </li> 
+                }.getOrElse {
+                    <li class="prev disabled">
+                        <a>&larr; Previous</a>
+                    </li>
+                }
+                <li class="current">
+                    <a>Displaying @(currentEntryPage.offset + 1) to @(currentEntryPage.offset + entries.size) of @currentEntryPage.total</a>
+                </li>
+                @currentEntryPage.next.map { page =>
+                    <li class="next">
+                        <a href="@link(page)">Next &rarr;</a>
+                    </li> 
+                }.getOrElse {
+                    <li class="next disabled">
+                        <a>Next &rarr;</a>
+                    </li>
+                }
+            </ul>
+        </div>
+        
+    }.getOrElse {
+        
+        <div class="well">
+            <em>Nothing to display</em>
+        </div>
+        
+    }
+
+	<hr/>
+    <h1>@Messages("tags.list.title", currentTagPage.total)</h1>
+
+
+    <div id="actions">
+        
+        @helper.form(action=routes.Application.list()) {
+            <input type="search" id="searchbox" name="f" value="@currentFilter" placeholder="Filter by tag name...">
+            <input type="submit" id="searchsubmit" value="Filter by name" class="btn primary">
+        }
+        
+        <a class="btn success" id="add" href="@routes.Application.create()">Add a new tag</a>
+        
+    </div>
+    
+    @Option(currentTagPage.items).filterNot(_.isEmpty).map { entries =>
+        
+        <table class="computers zebra-striped">
+            <thead>
+                <tr>
+                    @headerTag(2, "Name")
+                    @headerTag(3, "Added")
+                    @headerTag(4, "Enabled")
+                </tr>
+            </thead>
+            <tbody>
+
+                @entries.map { 
+                    case tag => {
+                        <tr>
+                            <td>
+                               <a href="@routes.Application.edit(tag.id.get)">@tag.name</a>
+                            </td>
+                            <td>
+                                @tag.added.format("yyyy-MM-dd HH:mm")
+                            </td>
+                            <td>
+                                @{tag.enabled match {
+                                	case true => "Yes"
+                                	case false => "No"
+                                }}
+                            </td>
+                        </tr>
+                    }
+                }
+
+            </tbody>
+        </table>
+
+        <div id="pagination" class="pagination">
+            <ul>
+                @currentTagPage.prev.map { page =>
+                    <li class="prev">
+                        <a href="@link(newTagPage = page)">&larr; Previous</a>
+                    </li> 
+                }.getOrElse {
+                    <li class="prev disabled">
+                        <a>&larr; Previous</a>
+                    </li>
+                }
+                <li class="current">
+                    <a>Displaying @(currentTagPage.offset + 1) to @(currentTagPage.offset + entries.size) of @currentTagPage.total</a>
+                </li>
+                @currentTagPage.next.map { page =>
+                    <li class="next">
+                        <a href="@link(newTagPage = page)">Next &rarr;</a>
+                    </li> 
+                }.getOrElse {
+                    <li class="next disabled">
+                        <a>Next &rarr;</a>
+                    </li>
+                }
+            </ul>
+        </div>
+        
+    }.getOrElse {
+        
+        <div class="well">
+            <em>Nothing to display</em>
+        </div>
+        
+    }
+}
+
+            
